@@ -8,7 +8,6 @@ dependencies = [
     "fastapi>=0.135.3",
     "fastapi-responses>=0.2.1",
     "httpx>=0.28.1",
-    "logging>=0.4.9.6",
     "mcp[cli]>=1.27.0",
     "requests>=2.33.1",
     "sap-xssec>=4.2.2",

@@ -3,40 +3,30 @@ import base64
 import requests
 import logging
 import time
-from typing import Optional, Dict, Any
+import contextlib
 
+from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException, Depends
-from fastapi.responses import JSONResponse
-
+#from fastapi.responses import JSONResponse
 from mcp.server.fastmcp import FastMCP
-
 # XSUAA
 from sap.xssec import create_security_context
 from mcp.server.transport_security import TransportSecuritySettings
 
 from starlette.applications import Starlette
 from starlette.routing import Mount
-import contextlib
 
 
 load_dotenv()
+
 logger = logging.getLogger(__name__)
-# basic config
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
 
-# FastAPI app
-#app = FastAPI()
-
-# MCP server
-# mcp = FastMCP("ariba-server") # stateless_http=True
-# mcp = FastMCP("ariba-server", stateless_http=True, json_response=True)
-
-#New code
 mcp = FastMCP(
     "ariba-server",
     stateless_http=True,
@@ -59,12 +49,6 @@ async def lifespan(app: Starlette):
     async with mcp.session_manager.run():
         yield
 
-# app = Starlette(
-#     routes=[
-#         Mount("/", app=mcp.streamable_http_app())
-#         ],
-#          lifespan=lifespan,
-# )
 
 app = Starlette(
     routes=[
@@ -72,25 +56,6 @@ app = Starlette(
     ],
     lifespan=lifespan,
 )
-
-# ------------------ AUTH DEPENDENCY ------------------
-# def require_auth(request: Request):
-#     auth_header = request.headers.get("Authorization")
-
-#     if not auth_header:
-#         raise HTTPException(status_code=401, detail="Missing Authorization header")
-
-#     token = auth_header.replace("Bearer ", "")
-
-#     try:
-#         xsuaa_credentials = os.getenv("VCAP_SERVICES")
-#         security_context = create_security_context(token, xsuaa_credentials)
-
-#         if not security_context.check_scope("$XSAPPNAME.Display"):
-#             raise HTTPException(status_code=403, detail="Insufficient scope")
-
-#     except Exception as e:
-#         raise HTTPException(status_code=401, detail=str(e))
 
 
 # ------------------ ARIBA CLIENT ------------------
@@ -183,41 +148,6 @@ def get_event_summary(
         realm: Realm name (e.g., 'myrelm')
     """
     return client.get_event_summary(doc_id, user, password_adapter, realm)
-
-
-
-
-# ------------------ FASTAPI ROUTE ------------------
-# @app.get("/supplier-bids")
-# def supplier_bids(
-#     doc_id: str,
-#     user: str,
-#     password_adapter: str,
-#     realm: str
-#    # _: None = Depends(require_auth)
-# ):
-#     return client.get_event_summary(doc_id, user, password_adapter, realm)
-
-
-# ------------------ HEALTH CHECK ------------------
-# @app.get("/health")
-# def health():
-#     return {"status": "ok"}
-
-# @app.get("/")
-# def root():
-#     return {"status": "running"}
-
-# ------------------ ENTRYPOINT ------------------
-
-#app.mount("/mcp", mcp.streamable_http_app())
-
-# @app.api_route("/mcp", methods=["GET", "POST"])
-# @app.api_route("/mcp/", methods=["GET", "POST"])
-
-# async def handle_mcp(request: Request):
-#      return await mcp.handle_http(request)
-
 
 
 def main():
