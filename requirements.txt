@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+sap-xssec
+fastmcp
+uv
+mcp[cli]
+httpx

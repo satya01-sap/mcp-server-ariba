@@ -1,0 +1,8 @@
+{
+"xsappname" : "ariba-mcp-btp",
+"tenant-mode"   : "shared" ,
+"scopes": [],
+"role-templates": [],
+"role-collections": []
+
+}
